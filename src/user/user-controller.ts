@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import userModel from './user-model';
-
 export async function createUser(
     req: Request,
     res: Response,
@@ -102,6 +101,33 @@ export async function updateUser(
         return res
             .status(200)
             .json({ data: existingUser, message: 'User updated successfully' });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getUserById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const userId = req.params.id; // Get user ID from request parameters
+
+    // Validate user ID
+    const idRegex = /^[0-9a-fA-F]{24}$/;
+    if (!idRegex.test(userId)) {
+        return next(createHttpError(400, 'Invalid user ID format.'));
+    }
+
+    try {
+        const user = await userModel.findById(userId); // Find user by ID
+        if (!user) {
+            return next(createHttpError(404, 'User not found.'));
+        }
+
+        return res
+            .status(200)
+            .json({ data: user, message: 'User retrieved successfully' });
     } catch (error) {
         return next(error);
     }
