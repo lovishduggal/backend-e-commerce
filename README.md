@@ -99,7 +99,7 @@ The project follows a modular structure:
 │   │   └── globalErrorHandler.ts
 │   ├── user/            # User module
 │   │   ├── user-controller.ts
-│   │   ├���─ user-model.ts
+│   │   ├── user-model.ts
 │   │   └── user-router.ts
 │   ├── product/         # Product module
 │   │   ├── product-controller.ts
