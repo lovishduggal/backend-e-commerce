@@ -30,7 +30,7 @@ export async function createOrder(
 
     try {
         // Check if the product exists and has enough stock
-        const product = await productModel.findById(productId);
+        const product = await productModel.findByIdAndUpdate(productId);
         if (!product) {
             return next(createHttpError(404, 'Product not found.'));
         }
@@ -55,6 +55,70 @@ export async function createOrder(
         return res.status(201).json({
             data: newOrder,
             message: 'Order created successfully',
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function updateOrder(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const { quantity } = req.body;
+    const orderId = req.params.id; // Get user ID from request parameters
+
+    // Validate orderId
+    const orderIdRegex = /^[0-9a-fA-F]{24}$/;
+    if (!orderIdRegex.test(orderId)) {
+        return next(createHttpError(400, 'Invalid order ID format.'));
+    }
+
+    // Validate quantity
+    if (typeof quantity !== 'number' || quantity <= 0) {
+        return next(
+            createHttpError(400, 'Quantity must be a positive number.')
+        );
+    }
+
+    try {
+        // Check if the order exists
+        const order = await orderModel.findById(orderId);
+        if (!order) {
+            return next(createHttpError(404, 'Order not found.'));
+        }
+
+        // Check the product associated with the order
+        const product = await productModel.findById(order.productId);
+        if (!product) {
+            return next(createHttpError(404, 'Product not found.'));
+        }
+
+        // Adjust stock based on the quantity change
+        if (quantity > order.quantity) {
+            // Increase order quantity, decrease stock
+            const quantityDifference = quantity - order.quantity;
+            if (product.stock < quantityDifference) {
+                return next(
+                    createHttpError(400, 'Insufficient stock for the product.')
+                );
+            }
+            product.stock -= quantityDifference;
+        } else if (quantity < order.quantity) {
+            // Decrease order quantity, increase stock
+            const quantityDifference = order.quantity - quantity;
+            product.stock += quantityDifference;
+        }
+
+        // Update the order quantity
+        order.quantity = quantity;
+        await order.save();
+        await product.save(); // Save the updated product stock
+
+        return res.status(200).json({
+            data: order,
+            message: 'Order updated successfully',
         });
     } catch (error) {
         return next(error);
