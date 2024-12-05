@@ -124,3 +124,30 @@ export async function updateOrder(
         return next(error);
     }
 }
+
+export async function getOrderById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const orderId = req.params.id; // Get order ID from request parameters
+
+    // Validate order ID
+    const idRegex = /^[0-9a-fA-F]{24}$/;
+    if (!idRegex.test(orderId)) {
+        return next(createHttpError(400, 'Invalid order ID format.'));
+    }
+
+    try {
+        const order = await orderModel.findById(orderId); // Find order by ID
+        if (!order) {
+            return next(createHttpError(404, 'Order not found.'));
+        }
+
+        return res
+            .status(200)
+            .json({ data: order, message: 'Order retrieved successfully' });
+    } catch (error) {
+        return next(error);
+    }
+}
