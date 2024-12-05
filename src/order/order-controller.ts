@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import orderModel from './order-model';
 import productModel from '../product/product-model'; // Adjust the import path as necessary
+import { subDays } from 'date-fns'; // Import date-fns for date manipulation
 
 export async function createOrder(
     req: Request,
@@ -147,6 +148,32 @@ export async function getOrderById(
         return res
             .status(200)
             .json({ data: order, message: 'Order retrieved successfully' });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getRecentOrders(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        // Calculate the date 7 days ago from today
+        const sevenDaysAgo = subDays(new Date(), 7);
+
+        // Find orders placed in the last 7 days
+        const recentOrders = await orderModel
+            .find({
+                orderDate: { $gte: sevenDaysAgo },
+            })
+            .populate('productId')
+            .populate('userId');
+
+        return res.status(200).json({
+            data: recentOrders,
+            message: 'Recent orders retrieved successfully',
+        });
     } catch (error) {
         return next(error);
     }
