@@ -1,0 +1,30 @@
+{
+    "name": "backend-e-commerce",
+    "main": "server.js",
+    "scripts": {
+        "dev": "nodemon server.ts"
+    },
+    "keywords": [],
+    "author": "Lovish Duggal <lovishduggal11@gmail.com>",
+    "license": "ISC",
+    "description": "Backend of e-commerce",
+    "devDependencies": {
+        "@eslint/js": "^9.16.0",
+        "@types/dotenv": "^6.1.1",
+        "@types/express": "^5.0.0",
+        "@types/node": "^22.10.1",
+        "eslint": "^9.16.0",
+        "globals": "^15.13.0",
+        "nodemon": "^3.1.7",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.7.2",
+        "typescript-eslint": "^8.17.0"
+    },
+    "dependencies": {
+        "@types/http-errors": "^2.0.4",
+        "dotenv": "^16.4.7",
+        "express": "^4.21.1",
+        "http-errors": "^2.0.0",
+        "mongoose": "^8.8.3"
+    }
+}
