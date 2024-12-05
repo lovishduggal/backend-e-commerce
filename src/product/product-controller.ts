@@ -207,3 +207,26 @@ export async function getUsersByProduct(
         return next(error);
     }
 }
+
+export async function getTotalStockQuantity(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    try {
+        // Retrieve all products and their stock quantities
+        const products = await productModel.find();
+
+        // Calculate the total stock quantity
+        const totalStockQuantity = products.reduce((total, product) => {
+            return total + (product.stock || 0); // Ensure stock is a number
+        }, 0);
+
+        return res.status(200).json({
+            totalStockQuantity,
+            message: 'Total stock quantity retrieved successfully',
+        });
+    } catch (error) {
+        return next(error);
+    }
+}

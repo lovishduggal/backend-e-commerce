@@ -4,16 +4,18 @@ import {
     getProductById,
     updateProduct,
     getUsersByProduct,
+    getTotalStockQuantity,
 } from './product-controller';
 
 const productRouter = express.Router();
 
 productRouter.post('/', createProduct as unknown as RequestHandler);
 productRouter.put('/:id', updateProduct as unknown as RequestHandler);
-productRouter.get('/:id', getProductById as unknown as RequestHandler);
 productRouter.get(
-    '/:id/users',
-    getUsersByProduct as unknown as RequestHandler
+    '/total-stock',
+    getTotalStockQuantity as unknown as RequestHandler
 );
+productRouter.get('/:id', getProductById as unknown as RequestHandler);
+productRouter.get('/:id/users', getUsersByProduct as unknown as RequestHandler);
 
 export default productRouter;
