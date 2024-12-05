@@ -29,4 +29,6 @@ const UserSchema = new mongoose_1.Schema({
     email: { type: String, required: true, unique: true },
     phone: { type: String, required: true, unique: true },
 });
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ phone: 1 }, { unique: true });
 exports.default = mongoose_1.default.model('User', UserSchema);

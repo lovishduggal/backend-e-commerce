@@ -12,4 +12,7 @@ const UserSchema: Schema = new Schema({
     phone: { type: String, required: true, unique: true },
 });
 
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ phone: 1 }, { unique: true });
+
 export default mongoose.model<IUser>('User', UserSchema);

@@ -15,4 +15,8 @@ const OrderSchema: Schema = new Schema({
     quantity: { type: Number, required: true },
 });
 
+OrderSchema.index({ userId: 1 });
+OrderSchema.index({ productId: 1 });
+OrderSchema.index({ orderDate: -1 });
+
 export default mongoose.model<IOrder>('Order', OrderSchema);

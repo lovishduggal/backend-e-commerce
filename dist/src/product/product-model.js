@@ -31,4 +31,6 @@ const ProductSchema = new mongoose_1.Schema({
     price: { type: Number, required: true },
     stock: { type: Number, required: true },
 });
+ProductSchema.index({ category: 1 });
+ProductSchema.index({ name: 1 });
 exports.default = mongoose_1.default.model('Product', ProductSchema);

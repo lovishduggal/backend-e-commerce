@@ -15,4 +15,7 @@ const ProductSchema: Schema = new Schema({
     stock: { type: Number, required: true },
 });
 
+ProductSchema.index({ category: 1 });
+ProductSchema.index({ name: 1 });
+
 export default mongoose.model<IProduct>('Product', ProductSchema);
