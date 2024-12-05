@@ -140,3 +140,30 @@ export async function updateProduct(
         return next(error);
     }
 }
+
+export async function getProductById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const productId = req.params.id; // Get product ID from request parameters
+
+    // Validate product ID
+    const idRegex = /^[0-9a-fA-F]{24}$/;
+    if (!idRegex.test(productId)) {
+        return next(createHttpError(400, 'Invalid product ID format.'));
+    }
+
+    try {
+        const product = await productModel.findById(productId); // Find product by ID
+        if (!product) {
+            return next(createHttpError(404, 'Product not found.'));
+        }
+
+        return res
+            .status(200)
+            .json({ data: product, message: 'Product retrieved successfully' });
+    } catch (error) {
+        return next(error);
+    }
+}
