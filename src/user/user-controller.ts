@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import userModel from './user-model';
+import orderModel from '../order/order-model';
 export async function createUser(
     req: Request,
     res: Response,
@@ -133,5 +134,36 @@ export async function getUserById(
     }
 }
 
+export async function getUserOrders(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const userId = req.params.id; // Get user ID from request parameters
 
+    // Validate userId
+    const userIdRegex = /^[0-9a-fA-F]{24}$/;
+    if (!userIdRegex.test(userId)) {
+        return next(createHttpError(400, 'Invalid user ID format.'));
+    }
 
+    try {
+        // Find orders for the specified user
+        const userOrders = await orderModel
+            .find({ userId })
+            .populate('productId');
+
+        if (userOrders.length === 0) {
+            return res.status(404).json({
+                message: 'No orders found for this user.',
+            });
+        }
+
+        return res.status(200).json({
+            data: userOrders,
+            message: 'User orders retrieved successfully',
+        });
+    } catch (error) {
+        return next(error);
+    }
+}
