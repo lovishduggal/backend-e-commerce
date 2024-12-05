@@ -1,9 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import orderModel from './order-model';
-import productModel from '../product/product-model'; // Adjust the import path as necessary
+import productModel from '../product/product-model';
 import { subDays } from 'date-fns'; // Import date-fns for date manipulation
-
 export async function createOrder(
     req: Request,
     res: Response,

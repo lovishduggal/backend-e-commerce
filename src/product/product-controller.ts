@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 import createHttpError from 'http-errors';
 import productModel from './product-model';
+import userModel from '../user/user-model';
+import orderModel from '../order/order-model';
 
 export async function createProduct(
     req: Request,
@@ -163,6 +165,44 @@ export async function getProductById(
         return res
             .status(200)
             .json({ data: product, message: 'Product retrieved successfully' });
+    } catch (error) {
+        return next(error);
+    }
+}
+
+export async function getUsersByProduct(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const productId = req.params.id; // Get product ID from request parameters
+
+    // Validate productId
+    const productIdRegex = /^[0-9a-fA-F]{24}$/;
+    if (!productIdRegex.test(productId)) {
+        return next(createHttpError(400, 'Invalid product ID format.'));
+    }
+
+    try {
+        // Find orders for the specified product
+        const orders = await orderModel.find({ productId });
+
+        if (orders.length === 0) {
+            return res.status(404).json({
+                message: 'No orders found for this product.',
+            });
+        }
+
+        // Extract unique user IDs from the orders
+        const userIds = [...new Set(orders.map((order) => order.userId))];
+
+        // Find user details for the unique user IDs
+        const users = await userModel.find({ _id: { $in: userIds } });
+
+        return res.status(200).json({
+            data: users,
+            message: 'Users who bought this product retrieved successfully',
+        });
     } catch (error) {
         return next(error);
     }
