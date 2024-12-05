@@ -8,13 +8,32 @@ export async function createUser(
     next: NextFunction
 ) {
     const { name, email, phone } = req.body;
-    if (!name || !email || !phone) {
-        return next(createHttpError(400, 'All fields are required.'));
+
+    // Validate name (min 3, max 50 characters)
+    const nameRegex = /^[A-Za-z\s]{3,50}$/;
+    if (!nameRegex.test(name)) {
+        return next(
+            createHttpError(400, 'Name must be between 3 and 50 characters.')
+        );
     }
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return next(createHttpError(400, 'Invalid email format.'));
+    }
+
+    // Validate phone (10 digits)
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+        return next(createHttpError(400, 'Phone number must be 10 digits.'));
+    }
+
     try {
         const existingUser = await userModel.findOne({ email });
-        if (existingUser)
-            return next(createHttpError(400, 'Email already exists'));
+        if (existingUser) {
+            return next(createHttpError(400, 'User already exists.'));
+        }
 
         const newUser = await userModel.create({ name, email, phone });
         return res
